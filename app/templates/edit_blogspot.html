@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Edit Blogspot Account{% endblock %}
+{% block content %}
+<h2>Edit Blogspot Account</h2>
+<form method="POST" class="mt-4" style="max-width:500px;">
+    <div class="mb-3">
+        <label>Name</label>
+        <input type="text" name="name" class="form-control" value="{{ acc.name }}" required>
+    </div>
+    <div class="mb-3">
+        <label>Blog ID</label>
+        <input type="text" name="blog_id" class="form-control" value="{{ acc.blog_id }}" required>
+    </div>
+    <div class="mb-3">
+        <label>Access Token</label>
+        <input type="text" name="access_token" class="form-control" value="{{ acc.access_token }}" required>
+    </div>
+    <div class="mb-3">
+        <label>Refresh Token</label>
+        <input type="text" name="refresh_token" class="form-control" value="{{ acc.refresh_token }}">
+    </div>
+    <button class="btn btn-success" type="submit">Update</button>
+</form>
+{% endblock %}

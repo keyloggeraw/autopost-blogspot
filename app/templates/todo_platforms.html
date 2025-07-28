@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Platform Sosmed{% endblock %}
+{% block content %}
+<h2 class="mb-3">Platform Sosial Media</h2>
+<form class="row g-2 mb-3" method="post" action="{{ url_for('routes.todo_platforms') }}">
+  <div class="col-8">
+    <input type="text" name="name" class="form-control" placeholder="Contoh: Facebook, Instagram, TikTok" required>
+  </div>
+  <div class="col-4">
+    <button class="btn btn-primary" type="submit">Tambah Platform</button>
+  </div>
+</form>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>No</th>
+      <th>Platform</th>
+      <th>Akun</th>
+      <th>Edit</th>
+      <th>Hapus</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in platforms %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>
+        <form method="post" action="{{ url_for('routes.todo_platform_edit', id=p.id) }}" class="d-flex">
+          <input type="text" name="name" value="{{ p.name }}" class="form-control form-control-sm me-2" style="max-width:160px;" required>
+          <button class="btn btn-sm btn-warning" type="submit">Simpan</button>
+        </form>
+      </td>
+      <td>
+        <a href="{{ url_for('routes.todo_accounts', platform_id=p.id) }}" class="btn btn-sm btn-info">Lihat Akun</a>
+      </td>
+      <td>
+        <!-- Edit sudah inline pada kolom platform -->
+      </td>
+      <td>
+        <form method="post" action="{{ url_for('routes.todo_platform_delete', id=p.id) }}" onsubmit="return confirm('Hapus platform ini?')">
+          <button class="btn btn-sm btn-danger" type="submit">Hapus</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

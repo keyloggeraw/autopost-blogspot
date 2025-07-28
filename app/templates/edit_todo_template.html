@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Edit Template To-Do{% endblock %}
+{% block content %}
+<h2 class="mb-3">Edit Template To-Do</h2>
+
+<form method="post" class="mb-4">
+  <div class="row">
+    <!-- Platform -->
+    <div class="col-md-3">
+      <label for="platform_id">Platform</label>
+      <select name="platform_id" class="form-select" required>
+        <option value="">-- Pilih Platform --</option>
+        {% for platform in platforms %}
+        <option value="{{ platform.id }}" {% if platform.id == template.platform_id %}selected{% endif %}>{{ platform.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Akun -->
+    <div class="col-md-3">
+      <label for="account_id">Akun</label>
+      <select name="account_id" class="form-select" required>
+        <option value="">-- Pilih Akun --</option>
+        {% for account in accounts %}
+        <option value="{{ account.id }}" {% if account.id == template.account_id %}selected{% endif %}>{{ account.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Hari -->
+    <div class="col-md-3">
+      <label for="day_of_week">Hari</label>
+      <select name="day_of_week" class="form-select" required>
+        <option value="Senin" {% if template.day_of_week == 'Senin' %}selected{% endif %}>Senin</option>
+        <option value="Selasa" {% if template.day_of_week == 'Selasa' %}selected{% endif %}>Selasa</option>
+        <option value="Rabu" {% if template.day_of_week == 'Rabu' %}selected{% endif %}>Rabu</option>
+        <option value="Kamis" {% if template.day_of_week == 'Kamis' %}selected{% endif %}>Kamis</option>
+        <option value="Jumat" {% if template.day_of_week == 'Jumat' %}selected{% endif %}>Jumat</option>
+        <option value="Sabtu" {% if template.day_of_week == 'Sabtu' %}selected{% endif %}>Sabtu</option>
+      </select>
+    </div>
+
+    <!-- Judul Tugas -->
+    <div class="col-md-3">
+      <label for="task_title">Judul Tugas</label>
+      <input type="text" name="task_title" class="form-control" value="{{ template.task_title }}" required>
+    </div>
+
+    <div class="col-md-3">
+      <label for="task_description">Deskripsi</label>
+      <textarea name="task_description" class="form-control" rows="2" required>{{ template.task_description }}</textarea>
+    </div>
+
+    <!-- Prioritas -->
+    <div class="col-md-2">
+      <label for="priority">Prioritas</label>
+      <select name="priority" class="form-select">
+        <option value="tinggi" {% if template.priority == 'tinggi' %}selected{% endif %}>Tinggi</option>
+        <option value="sedang" {% if template.priority == 'sedang' %}selected{% endif %}>Sedang</option>
+        <option value="rendah" {% if template.priority == 'rendah' %}selected{% endif %}>Rendah</option>
+      </select>
+    </div>
+
+    <!-- Radio Button untuk Menambahkan ke Kalender dan Ulangi Mingguan -->
+    <div class="col-md-3">
+      <label>Tambahkan ke Kalender?</label>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="add_to_calendar" value="yes" {% if template.add_to_calendar == 'yes' %}checked{% endif %}>
+        <label class="form-check-label">
+          Ya, tambahkan ke Kalender
+        </label>
+      </div>
+      <div class="form-check">
+        <input class="form-check-input" type="radio" name="add_to_calendar" value="no" {% if template.add_to_calendar == 'no' %}checked{% endif %}>
+        <label class="form-check-label">
+          Tidak, jangan tambahkan ke Kalender
+        </label>
+      </div>
+    </div>
+
+    <div class="col-md-1">
+      <button type="submit" class="btn btn-success w-100">Simpan</button>
+    </div>
+  </div>
+</form>
+{% endblock %}

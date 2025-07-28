@@ -1,0 +1,166 @@
+/* ===== Sidebar ===== */
+.sidebar {
+  min-width: 220px;
+  max-width: 240px;
+  background: linear-gradient(180deg, #22577a 0, #5584ac 100%);
+  color: #fff;
+  border-right: 1px solid #dbeafe;
+}
+
+.sidebar .nav-link {
+  color: #e7f6ff;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.2s, color 0.2s;
+  padding: 0.7rem 1.1rem;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link[aria-expanded="true"],
+.sidebar .nav-link:hover {
+  background: #f7b801;
+  color: #193350 !important;
+  font-weight: bold;
+}
+
+.sidebar .nav-link i {
+  margin-right: 10px;
+}
+
+.sidebar .nav .collapse .nav-link {
+  font-size: 1rem;
+}
+
+.sidebar .nav .collapse.show {
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+}
+
+.sidebar .nav .nav-item {
+  margin-bottom: 2px;
+}
+
+.sidebar .nav .nav-item .dropdown-toggle::after {
+  display: none;
+}
+
+.sidebar .nav .menu-label {
+  font-size: 0.88rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #9ed6f7;
+  margin: 0.8rem 0 0.25rem 0;
+  font-weight: 700;
+}
+
+/* ===== Sidebar Responsive ===== */
+@media (max-width: 991px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 56px;
+    z-index: 1030;
+    height: calc(100% - 56px);
+    min-height: 100vh;
+    transition: transform 0.3s;
+    transform: translateX(-100%);
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+  #sidebarBackdrop {
+    display: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.25);
+    z-index: 1025;
+  }
+
+  #sidebarBackdrop.active {
+    display: block;
+  }
+}
+
+/* ===== Navbar ===== */
+.navbar-brand {
+  letter-spacing: 1px;
+}
+
+/* ===== Avatar & User Dropdown ===== */
+.avatar-sm {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #e2e6ea;
+}
+
+.user-dropdown .dropdown-toggle {
+  color: #222;
+  font-weight: 500;
+}
+
+.user-dropdown .dropdown-menu {
+  right: 0;
+  left: auto;
+  min-width: 200px;
+}
+
+/* ===== Tagify ===== */
+.tagify {
+  width: 100% !important;
+  min-width: 700px !important;
+  max-width: 1000px !important;
+  font-size: 1.1rem;
+}
+
+.tagify__input {
+  min-width: 300px;
+  font-size: 1.1rem;
+}
+
+@media (max-width: 800px) {
+  .tagify,
+  .tagify__input {
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ===== CKEditor ===== */
+.ck-editor__editable[role="textbox"] {
+  min-height: 500px;
+  height: 600px !important;
+  max-height: 800px;
+  font-size: 1.1rem;
+}
+
+.ck-editor__main {
+  max-width: 1200px;
+}
+
+/* ===== Remove Image Button ===== */
+.remove-image-btn {
+  font-weight: bold;
+  background: white;
+  border-radius: 50%;
+  padding: 0 5px;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  margin-left: -12px;
+  margin-top: -8px;
+}
+
+/* ===== Body ===== */
+body {
+  background: #f6f8fa;
+}
+
+ .sortable-item {
+    cursor: move;
+  }

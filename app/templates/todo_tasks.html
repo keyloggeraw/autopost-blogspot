@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+{% block title %}To-Do List Marketing{% endblock %}
+
+{% block content %}
+<h2 class="mb-4 text-primary fw-bold"><i class="bi bi-list-check me-2"></i>To-Do List Marketing</h2>
+
+<a class="btn btn-outline-primary mb-3 shadow-sm" href="{{ url_for('routes.todo_tasks_calendar') }}">
+  <i class="bi bi-calendar3"></i> Agenda Kalender
+</a>
+
+<!-- Filter -->
+<div class="card shadow-sm mb-4 border-primary">
+  <div class="card-body">
+    <form class="row g-2" method="get" action="{{ url_for('routes.todo_tasks') }}">
+      <div class="col-md-2">
+        <select name="platform_id" class="form-select border-primary" onchange="this.form.submit()">
+          <option value="">Platform</option>
+          {% for p in platforms %}
+          <option value="{{ p.id }}" {% if p.id == platform_id %}selected{% endif %}>{{ p.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select name="account_id" class="form-select border-primary" onchange="this.form.submit()">
+          <option value="">Akun</option>
+          {% for a in accounts %}
+          <option value="{{ a.id }}" {% if a.id == account_id %}selected{% endif %}>{{ a.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <input type="date" name="date" class="form-control border-primary" value="{{ hari }}">
+      </div>
+      <div class="col-md-2">
+        <select name="priority" class="form-select border-primary">
+          <option value="">Prioritas</option>
+          <option value="tinggi" {% if priority=='tinggi' %}selected{% endif %}>Tinggi</option>
+          <option value="sedang" {% if priority=='sedang' %}selected{% endif %}>Sedang</option>
+          <option value="rendah" {% if priority=='rendah' %}selected{% endif %}>Rendah</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <select name="status" class="form-select border-primary">
+          <option value="">Status</option>
+          <option value="pending" {% if status=='pending' %}selected{% endif %}>Belum</option>
+          <option value="done" {% if status=='done' %}selected{% endif %}>Selesai</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <input type="text" name="search" class="form-control border-primary" value="{{ search }}" placeholder="Cari tugas...">
+      </div>
+      <div class="col-md-12 mt-2">
+        <button type="submit" class="btn btn-primary px-4 me-2"><i class="bi bi-funnel"></i> Filter</button>
+        <a href="{{ url_for('routes.todo_tasks') }}" class="btn btn-outline-secondary px-4"><i class="bi bi-x-lg"></i> Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Tambah tugas baru -->
+<div class="card shadow-sm mb-4 border-success">
+  <div class="card-body">
+    <form class="row g-2 align-items-center" method="post">
+      <div class="col-md-2">
+        <select name="account_id" class="form-select border-success" required>
+          <option value="">Akun</option>
+          {% for p in platforms %}
+            {% for a in p.accounts %}
+            <option value="{{ a.id }}" {% if a.id == account_id %}selected{% endif %}>
+              {{ p.name }} - {{ a.name }}
+            </option>
+            {% endfor %}
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <input type="text" name="title" class="form-control border-success" placeholder="Tugas" required>
+      </div>
+      <div class="col-md-2">
+        <input type="text" name="note" class="form-control border-success" placeholder="Catatan/link">
+      </div>
+      <div class="col-md-2">
+        <input type="date" name="deadline" class="form-control border-success" value="{{ hari }}">
+      </div>
+      <div class="col-md-1">
+        <input type="time" name="time" class="form-control border-success" placeholder="Jam">
+      </div>
+      <div class="col-md-1">
+        <select name="priority" class="form-select border-success">
+          <option value="tinggi">🔥</option>
+          <option value="sedang" selected>•</option>
+          <option value="rendah">↓</option>
+        </select>
+      </div>
+      <div class="col-md-1">
+        <select name="recurring" class="form-select border-success">
+          <option value="none">Sekali</option>
+          <option value="daily">Harian</option>
+          <option value="weekly">Mingguan</option>
+          <option value="monthly">Bulanan</option>
+        </select>
+      </div>
+      <div class="col-md-1">
+        <button class="btn btn-success w-100" type="submit"><i class="bi bi-plus-circle"></i> Tambah</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Daftar tugas -->
+<div class="card shadow-sm mb-3 border-info">
+  <div class="card-body p-0">
+    <table class="table table-hover align-middle mb-0" style="border-radius:12px;overflow:hidden;">
+      <thead class="table-info">
+        <tr>
+          <th>#</th>
+          <th>Akun</th>
+          <th>Tugas</th>
+          <th>Catatan</th>
+          <th>Deadline</th>
+          <th>Jam</th>
+          <th>Perkerjaan</th>
+          <th>Prioritas</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in tasks.items %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td><span class="fw-semibold text-primary">{{ t.account.platform.name }}</span><br><span class="text-dark small">{{ t.account.name }}</span></td>
+          <td>{{ t.title }}</td>
+          <td>{{ t.note }}</td>
+          <td><span class="badge rounded-pill bg-info bg-opacity-25 text-primary">{{ t.deadline }}</span></td>
+          <td>{{ t.time.strftime("%H:%M") if t.time else "" }}</td>
+          <td>
+            {% if t.recurring == 'daily' %}<span class="badge bg-warning text-dark">Harian</span>
+            {% elif t.recurring == 'weekly' %}<span class="badge bg-primary">Mingguan</span>
+            {% elif t.recurring == 'monthly' %}<span class="badge bg-secondary">Bulanan</span>
+            {% else %}<span class="badge bg-light text-dark">Sekali</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if t.priority == 'tinggi' %}<span class="badge bg-danger">Tinggi</span>
+            {% elif t.priority == 'rendah' %}<span class="badge bg-secondary">Rendah</span>
+            {% else %}<span class="badge bg-primary">Sedang</span>
+            {% endif %}
+          </td>
+          <td>
+            {% if t.is_done %}
+              <span class="badge bg-success"><i class="bi bi-check-lg"></i> Selesai</span>
+            {% else %}
+              <form action="{{ url_for('routes.todo_task_done', task_id=t.id) }}" method="post" style="display:inline;">
+                <button class="btn btn-sm btn-outline-primary" type="submit"><i class="bi bi-check-circle"></i> Checklist</button>
+              </form>
+            {% endif %}
+          </td>
+          <td>
+            <div class="d-flex gap-1">
+              <a href="{{ url_for('routes.todo_task_edit', task_id=t.id) }}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
+              <a href="{{ url_for('routes.todo_task_duplicate', task_id=t.id) }}" class="btn btn-sm btn-info text-white"><i class="bi bi-files"></i></a>
+              <form action="{{ url_for('routes.todo_task_delete', task_id=t.id) }}" method="post" style="display:inline;">
+                <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Hapus tugas ini?')"><i class="bi bi-trash"></i></button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+        {% if not tasks.items %}
+        <tr><td colspan="10" class="text-center text-secondary">Belum ada tugas.</td></tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Pagination -->
+<div class="d-flex justify-content-between align-items-center mt-3 flex-wrap">
+  <div class="mb-2">
+    <label class="me-2">Tampilkan</label>
+    <select id="pageSizeFilter" class="form-select d-inline w-auto" onchange="window.location='{{ url_for('routes.todo_tasks', page=tasks.page) }}&page_size='+this.value;">
+      <option value="25" {% if page_size == 25 %}selected{% endif %}>25</option>
+      <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
+      <option value="100" {% if page_size == 100 %}selected{% endif %}>100</option>
+    </select>
+    <label class="ms-2 mb-0">per halaman</label>
+  </div>
+  <nav>
+    <ul class="pagination mb-0">
+      <li class="page-item {% if tasks.prev_num == 0 or tasks.page == 1 %}disabled{% endif %}">
+        <a class="page-link" href="{{ url_for('routes.todo_tasks', page=tasks.prev_num, page_size=page_size) }}">Previous</a>
+      </li>
+      <li class="page-item disabled"><a class="page-link">{{ tasks.page }} / {{ tasks.pages }}</a></li>
+      <li class="page-item {% if tasks.next_num == 0 or tasks.page == tasks.pages %}disabled{% endif %}">
+        <a class="page-link" href="{{ url_for('routes.todo_tasks', page=tasks.next_num, page_size=page_size) }}">Next</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+<style>
+  .table th, .table td { vertical-align: middle; }
+  .table thead th { background: #e3f0fb; }
+  .btn-info { background: #0dcaf0; border-color: #0dcaf0; }
+  .btn-info:hover { background: #31d2f2; border-color: #31d2f2; }
+  .table-hover tbody tr:hover { background-color: #f5faff; }
+  .card { border-radius: 16px !important; }
+</style>
+
+{% endblock %}

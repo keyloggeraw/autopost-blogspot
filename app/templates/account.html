@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Account{% endblock %}
+{% block content %}
+<h2>Edit Profile</h2>
+<form method="POST" enctype="multipart/form-data" class="mt-4" style="max-width:400px;">
+    <div class="mb-3 text-center">
+        <img src="{{ url_for('static', filename=user.image_filename) }}" class="rounded-circle" width="110" height="110" alt="avatar">
+    </div>
+    <div class="mb-3">
+        <label for="full_name" class="form-label">Nama Lengkap</label>
+        <input type="text" name="full_name" class="form-control" value="{{ user.full_name or '' }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <input type="text" name="username" class="form-control" value="{{ user.username }}" required>
+    </div>
+    <div class="mb-3">
+        <label for="image" class="form-label">Ganti Foto</label>
+        <input type="file" name="image" class="form-control">
+    </div>
+    <button class="btn btn-primary" type="submit">Simpan</button>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-success mt-3">{{ messages[0] }}</div>
+      {% endif %}
+    {% endwith %}
+</form>
+{% endblock %}

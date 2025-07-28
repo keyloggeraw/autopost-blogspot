@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Daftar Postingan{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-0">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold mb-1">
+        <i class="bi bi-journal-text me-2"></i>Daftar Postingan Blogspot
+      </h2>
+      <small class="text-muted">Kelola semua postingan Blogspot kamu secara praktis</small>
+    </div>
+  </div>
+  
+  <form class="row gy-2 gx-3 align-items-center mb-4" method="get" action="{{ url_for('routes.list_posts') }}">
+    <div class="col-md-4">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+        <input type="text" name="q" class="form-control border-start-0" placeholder="Cari Judul..." value="{{ q }}">
+      </div>
+    </div>
+    <div class="col-md-3">
+      <select name="blog_id" class="form-select">
+        <option value="">🌐 Semua Website</option>
+        {% for id, blog in blogs.items() %}
+        <option value="{{ id }}" {% if id|string == blog_id|string %}selected{% endif %}>{{ blog.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <input type="date" name="date" class="form-control" value="{{ date }}">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">
+        <i class="bi bi-funnel-fill me-1"></i>Filter
+      </button>
+    </div>
+  </form>
+
+  <div class="card shadow-sm rounded-4">
+    <div class="table-responsive">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th class="text-center" style="width: 48px;">No</th>
+            <th>Judul</th>
+            <th>Website</th>
+            <th>Tanggal</th>
+            <th>Status</th>
+            <th class="text-center" style="width: 200px;">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for post in posts %}
+          <tr>
+            <td class="text-center">{{ loop.index }}</td>
+            <td>{{ post.title|e }}</td>
+            <td>
+            {{ blogs[post.blogspot_blog_id].name if post.blogspot_blog_id in blogs else "-" }}
+            </td>
+            <td>{{ post.scheduled_time.strftime('%d/%m/%Y %H:%M') }}</td>
+            <td>
+              {% if post.status == 'posted' %}
+                <span class="badge bg-success bg-opacity-75">Posted</span>
+              {% elif post.status == 'pending' %}
+                <span class="badge bg-warning text-dark bg-opacity-75">Pending</span>
+              {% elif post.status == 'failed' %}
+                <span class="badge bg-danger bg-opacity-75">Failed</span>
+              {% else %}
+                <span class="badge bg-secondary bg-opacity-75">{{ post.status }}</span>
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <a href="{{ url_for('routes.detail_post', post_id=post.id) }}" class="btn btn-sm btn-info me-1 mb-1" title="Detail">
+                <i class="bi bi-info-circle me-1"></i>
+              </a>
+              <a href="{{ url_for('routes.duplicate_post', post_id=post.id) }}" class="btn btn-sm btn-warning me-1 mb-1" title="Duplicate">
+                <i class="bi bi-files me-1"></i>
+              </a>
+              <a href="{{ url_for('routes.edit_post', post_id=post.id) }}" class="btn btn-sm btn-primary me-1 mb-1" title="Edit">
+                <i class="bi bi-pencil-square me-1"></i>
+              </a>
+              {% if post.status != 'posted' %}
+              <a href="{{ url_for('routes.cancel_post', post_id=post.id) }}" class="btn btn-sm btn-secondary me-1 mb-1" title="Cancel">
+                <i class="bi bi-x-circle me-1"></i>
+              </a>
+              {% endif %}
+              <a href="{{ url_for('routes.delete_post', post_id=post.id) }}" class="btn btn-sm btn-danger mb-1" onclick="return confirm('Yakin hapus postingan ini?')" title="Delete">
+                <i class="bi bi-trash me-1"></i>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3 mt-4">
+    <form method="get" class="d-flex align-items-center gap-2 mb-0">
+      <input type="hidden" name="q" value="{{ q }}">
+      <input type="hidden" name="blog_id" value="{{ blog_id }}">
+      <input type="hidden" name="date" value="{{ date }}">
+      <label class="me-2 mb-0">Tampilkan</label>
+      <select name="per_page" onchange="this.form.submit()" class="form-select w-auto">
+        <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+        <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+        <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+      </select>
+      <label class="ms-2 mb-0">per halaman</label>
+    </form>
+    <nav>
+      <ul class="pagination mb-0">
+        {% if pagination.has_prev %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('routes.list_posts', q=q, blog_id=blog_id, date=date, page=pagination.prev_num, per_page=per_page) }}">&laquo;</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">&laquo;</span></li>
+        {% endif %}
+        {% for p in range(1, pagination.pages + 1) %}
+        <li class="page-item {% if pagination.page == p %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('routes.list_posts', q=q, blog_id=blog_id, date=date, page=p, per_page=per_page) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        {% if pagination.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('routes.list_posts', q=q, blog_id=blog_id, date=date, page=pagination.next_num, per_page=per_page) }}">&raquo;</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">&raquo;</span></li>
+        {% endif %}
+      </ul>
+    </nav>
+  </div>
+</div>
+{% endblock %}

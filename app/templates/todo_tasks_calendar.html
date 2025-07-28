@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% block title %}Agenda Kalender Marketing{% endblock %}
+{% block content %}
+<h2 class="mb-3">Agenda Kalender Marketing</h2>
+<a class="btn btn-outline-primary mb-2" href="{{ url_for('routes.todo_tasks') }}">⇦ Kembali ke Daftar Tugas</a>
+
+<!-- FILTER -->
+<form class="mb-3" id="filterForm">
+  <div class="row g-2">
+    <div class="col-md-3">
+      <select id="platformFilter" class="form-select">
+        <option value="">Semua Platform</option>
+        {% for p in platforms %}
+        <option value="{{ p.id }}">{{ p.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select id="accountFilter" class="form-select">
+        <option value="">Semua Akun</option>
+        {% for a in accounts %}
+        <option value="{{ a.id }}" data-platform="{{ a.platform_id }}">{{ a.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</form>
+
+<!-- KALENDER -->
+<div id="calendar"></div>
+
+<!-- MODAL ADD/EDIT TUGAS -->
+<div class="modal fade" id="addEditTaskModal" tabindex="-1" aria-labelledby="addEditTaskLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" id="addEditTaskForm">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addEditTaskLabel">Tambah/Edit Tugas</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="deadline" id="editInputDeadline">
+        <input type="hidden" name="task_id" id="editTaskId">
+        <div class="mb-2">
+          <label>Akun</label>
+          <select name="account_id" class="form-select" id="editInputAccount" required>
+            {% for a in accounts %}
+            <option value="{{ a.id }}" data-platform="{{ a.platform_id }}">{{ a.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-2">
+          <label>Judul Tugas</label>
+          <input type="text" name="title" class="form-control" id="editInputTitle" required>
+        </div>
+        <div class="mb-2">
+          <label>Catatan/Link</label>
+          <input type="text" name="note" class="form-control" id="editInputNote">
+        </div>
+        <div class="row mb-2">
+          <div class="col-5">
+            <label>Jam</label>
+            <input type="time" name="time" class="form-control" id="editInputTime">
+          </div>
+          <div class="col-4">
+            <label>Prioritas</label>
+            <select name="priority" class="form-select" id="editInputPriority">
+              <option value="tinggi">Tinggi</option>
+              <option value="sedang">Sedang</option>
+              <option value="rendah">Rendah</option>
+            </select>
+          </div>
+          <div class="col-3">
+            <label>Recurring</label>
+            <select name="recurring" class="form-select" id="editInputRecurring">
+              <option value="none">Sekali</option>
+              <option value="daily">Harian</option>
+              <option value="weekly">Mingguan</option>
+              <option value="monthly">Bulanan</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" value="1" id="editInputStatus" name="is_done">
+        <label class="form-check-label" for="editInputStatus">
+          Tandai Selesai
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button id="saveEditBtn" class="btn btn-primary" type="submit">Simpan</button>
+        <button id="deleteEditBtn" class="btn btn-danger" type="button" style="display:none;">Hapus</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- FullCalendar CSS & JS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+<!-- Bootstrap 5 Modal (jika belum ada di base.html) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+let calendar;
+document.addEventListener('DOMContentLoaded', function() {
+  // Filter akun by platform
+  const platformFilter = document.getElementById('platformFilter');
+  const accountFilter = document.getElementById('accountFilter');
+  function filterAccounts(platformId) {
+    [...accountFilter.options].forEach(opt => {
+      if (!opt.value) {
+        opt.style.display = '';
+        return;
+      }
+      opt.style.display = (!platformId || opt.getAttribute('data-platform') == platformId) ? '' : 'none';
+    });
+    accountFilter.value = '';
+  }
+  platformFilter.addEventListener('change', function(){
+    filterAccounts(this.value);
+    calendar.refetchEvents();
+  });
+  accountFilter.addEventListener('change', function(){
+    calendar.refetchEvents();
+  });
+
+  // Kalender
+  var calendarEl = document.getElementById('calendar');
+  calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    height: 'auto',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    events: function(fetchInfo, successCallback, failureCallback) {
+      let url = '/todo_tasks/events';
+      let pid = platformFilter.value;
+      let aid = accountFilter.value;
+      let params = [];
+      if(pid) params.push('platform_id=' + pid);
+      if(aid) params.push('account_id=' + aid);
+      if(params.length) url += '?' + params.join('&');
+      fetch(url)
+        .then(res => res.json())
+        .then(data => successCallback(data));
+    },
+    dateClick: function(info) {
+      document.getElementById('addEditTaskForm').reset();
+      document.getElementById('editTaskId').value = '';
+      document.getElementById('editInputDeadline').value = info.dateStr;
+      document.getElementById('saveEditBtn').style.display = '';
+      document.getElementById('deleteEditBtn').style.display = 'none';
+      var modal = new bootstrap.Modal(document.getElementById('addEditTaskModal'));
+      modal.show();
+    },
+    editable: true,
+    eventDrop: function(info) {
+      fetch('/todo_tasks/update_deadline', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          task_id: info.event.id,
+          deadline: info.event.startStr
+        })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (!res.success) {
+          alert("Gagal update tugas!");
+          info.revert();
+        }
+      })
+      .catch(()=>{ alert("Gagal update tugas!"); info.revert(); });
+    },
+    eventClick: function(info) {
+      fetch('/todo_tasks/get/' + info.event.id)
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById('editTaskId').value = data.id;
+          document.getElementById('editInputDeadline').value = data.deadline;
+          document.getElementById('editInputAccount').value = data.account_id;
+          document.getElementById('editInputTitle').value = data.title;
+          document.getElementById('editInputNote').value = data.note;
+          document.getElementById('editInputTime').value = data.time;
+          document.getElementById('editInputPriority').value = data.priority;
+          document.getElementById('editInputRecurring').value = data.recurring;
+          document.getElementById('editInputStatus').checked = !!data.is_done;
+          document.getElementById('saveEditBtn').style.display = '';
+          document.getElementById('deleteEditBtn').style.display = '';
+          var modal = new bootstrap.Modal(document.getElementById('addEditTaskModal'));
+          modal.show();
+        });
+    }
+  });
+  calendar.render();
+
+  // Submit form ADD/EDIT (add jika task_id kosong, edit jika task_id ada)
+  document.getElementById('addEditTaskForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  let formData = new FormData(this);
+  let taskId = document.getElementById('editTaskId').value;
+  let isDone = document.getElementById('editInputStatus').checked;
+
+  // Jika edit
+  if(taskId){
+    formData.append('is_done', isDone ? '1' : '0');
+    fetch('/todo_tasks/update/' + taskId, {
+      method: 'POST',
+      body: formData
+    }).then(res => res.json())
+    .then(res => {
+      if(res.success){
+        bootstrap.Modal.getInstance(document.getElementById('addEditTaskModal')).hide();
+        calendar.refetchEvents();
+        this.reset();
+      } else {
+        alert("Gagal menyimpan tugas!");
+      }
+    });
+  } else {
+    // Add
+    fetch('/todo_tasks/add_from_calendar', {
+      method: 'POST',
+      body: formData
+    }).then(res => res.json())
+    .then(res => {
+      if(res.success){
+        bootstrap.Modal.getInstance(document.getElementById('addEditTaskModal')).hide();
+        calendar.refetchEvents();
+        this.reset();
+      } else {
+        alert("Gagal tambah tugas!");
+      }
+    });
+  }
+});
+
+
+  // Hapus tugas
+  document.getElementById('deleteEditBtn').addEventListener('click', function() {
+    let taskId = document.getElementById('editTaskId').value;
+    if (confirm('Hapus tugas ini?')) {
+      fetch('/todo_tasks/delete/' + taskId, {
+        method: 'POST'
+      }).then(res => res.json())
+      .then(res => {
+        if(res.success){
+          bootstrap.Modal.getInstance(document.getElementById('addEditTaskModal')).hide();
+          calendar.refetchEvents();
+        } else {
+          alert("Gagal hapus tugas!");
+        }
+      });
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Detail Postingan{% endblock %}
+
+{% block content %}
+<div class="card mb-3">
+    <div class="card-header"><b>{{ post.title }}</b></div>
+    <div class="card-body">
+        <p><b>Website:</b> {{ blog.name if blog else '-' }}</p>
+        <p><b>Status:</b>
+            {% if post.status == 'posted' %}
+                <span class="badge bg-success">Posted</span>
+            {% elif post.status == 'pending' %}
+                <span class="badge bg-warning text-dark">Pending</span>
+            {% elif post.status == 'failed' %}
+                <span class="badge bg-danger">Failed</span>
+            {% elif post.status == 'cancelled' %}
+                <span class="badge bg-secondary">Cancelled</span>
+            {% else %}
+                <span class="badge bg-secondary">{{ post.status }}</span>
+            {% endif %}
+        </p>
+        <p><b>Jadwal Posting:</b> {{ post.scheduled_time.strftime('%d/%m/%Y %H:%M') if post.scheduled_time else '-' }}</p>
+        <p><b>Label:</b>
+            {% for lbl in post.labels.split(',') if lbl.strip() %}
+                <span class="badge bg-light border text-dark">{{ lbl.strip() }}</span>
+            {% endfor %}
+        </p>
+        <hr>
+        <div><b>Isi Artikel:</b></div>
+        <div class="border p-3" style="background:#f9f9f9">
+            {{ post.content|safe }}
+        </div>
+        {% if post.search_description %}
+            <div class="mt-2">
+                <b>Search Description:</b> {{ post.search_description }}
+            </div>
+        {% endif %}
+    </div>
+</div>
+<a href="{{ url_for('routes.list_posts') }}" class="btn btn-secondary">Kembali ke Daftar</a>
+{% endblock %}

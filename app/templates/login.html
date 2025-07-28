@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="container" style="max-width:400px;">
+    <h2 class="mb-4">Login</h2>
+    <form method="POST">
+        <input type="text" class="form-control mb-3" name="username" placeholder="Username" required autofocus>
+        <input type="password" class="form-control mb-3" name="password" placeholder="Password" required>
+        <button class="btn btn-primary w-100" type="submit">Login</button>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="alert alert-danger mt-3">{{ messages[0] }}</div>
+          {% endif %}
+        {% endwith %}
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Template To-Do List Mingguan{% endblock %}
+{% block content %}
+<h2 class="mb-3">Template To-Do List Mingguan</h2>
+
+<!-- Form tambah template -->
+<form method="post" class="mb-4">
+  <div class="row">
+    <!-- Platform -->
+    <div class="col-md-3">
+      <label for="platform_id">Platform</label>
+      <select name="platform_id" class="form-select" required>
+        <option value="">-- Pilih Platform --</option>
+        {% for platform in platforms %}
+        <option value="{{ platform.id }}">{{ platform.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Akun -->
+    <div class="col-md-3">
+      <label for="account_id">Akun</label>
+      <select name="account_id" class="form-select" required>
+        <option value="">-- Pilih Akun --</option>
+        {% for account in accounts %}
+        <option value="{{ account.id }}">{{ account.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Hari -->
+    <div class="col-md-3">
+      <label for="day_of_week">Hari</label>
+      <select name="day_of_week" class="form-select" required>
+        <option value="Senin">Senin</option>
+        <option value="Selasa">Selasa</option>
+        <option value="Rabu">Rabu</option>
+        <option value="Kamis">Kamis</option>
+        <option value="Jumat">Jumat</option>
+        <option value="Sabtu">Sabtu</option>
+      </select>
+    </div>
+
+    <!-- Judul Tugas -->
+    <div class="col-md-3">
+      <label for="task_title">Judul Tugas</label>
+      <input type="text" name="task_title" class="form-control" placeholder="Judul tugas" required>
+    </div>
+
+    <!-- Deskripsi Tugas -->
+    <div class="col-md-3">
+      <label for="task_description">Deskripsi</label>
+      <textarea name="task_description" class="form-control" placeholder="Deskripsi tugas" rows="2" required></textarea>
+    </div>
+
+    <!-- Prioritas -->
+    <div class="col-md-2">
+      <label for="priority">Prioritas</label>
+      <select name="priority" class="form-select">
+        <option value="tinggi">Tinggi</option>
+        <option value="sedang">Sedang</option>
+        <option value="rendah">Rendah</option>
+      </select>
+    </div>
+
+    <div class="col-md-1">
+      <button type="submit" class="btn btn-success w-100">Tambah</button>
+    </div>
+  </div>
+</form>
+
+
+<!-- Daftar Template -->
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Hari</th>
+      <th>Judul Tugas</th>
+      <th>Deskripsi</th>
+      <th>Platform</th>
+      <th>Akun</th>
+      <th>Prioritas</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for template in templates %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td>{{ template.day_of_week }}</td>
+      <td>{{ template.task_title }}</td>
+      <td>{{ template.task_description }}</td>
+      <td>{{ template.platform.name }}</td>
+      <td>{{ template.account.name }}</td>
+      <td>{{ template.priority }}</td>
+      <td>
+        <a href="{{ url_for('routes.edit_todo_template', id=template.id) }}" class="btn btn-sm btn-warning">Edit</a>
+        <form action="{{ url_for('routes.delete_todo_template', id=template.id) }}" method="post" style="display:inline;">
+          <button class="btn btn-sm btn-danger" type="submit">Hapus</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

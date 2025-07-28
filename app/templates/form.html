@@ -1,0 +1,8 @@
+<div class="mb-3">
+    <label for="blogspot_blog_id" class="form-label">Pilih Blogspot Blog</label>
+    <select name="blogspot_blog_id" class="form-control" required>
+        {% for blog in blogs %}
+            <option value="{{ blog.blog_id }}">{{ blog.name }}</option>
+        {% endfor %}
+    </select>
+</div>

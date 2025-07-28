@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Edit Tugas{% endblock %}
+{% block content %}
+<h3>Edit Tugas</h3>
+<form method="post" class="mb-3">
+  <div class="mb-2">
+    <label>Akun</label>
+    <select name="account_id" class="form-select" required>
+      {% for p in platforms %}
+        {% for a in p.accounts %}
+        <option value="{{ a.id }}" {% if a.id == task.account_id %}selected{% endif %}>
+          {{ p.name }} - {{ a.name }}
+        </option>
+        {% endfor %}
+      {% endfor %}
+    </select>
+  </div>
+  <div class="mb-2">
+    <label>Judul Tugas</label>
+    <input type="text" name="title" class="form-control" value="{{ task.title }}" required>
+  </div>
+  <div class="mb-2">
+    <label>Catatan/Link</label>
+    <input type="text" name="note" class="form-control" value="{{ task.note }}">
+  </div>
+  <div class="row">
+    <div class="col-4">
+      <label>Deadline</label>
+      <input type="date" name="deadline" class="form-control" value="{{ task.deadline }}">
+    </div>
+    <div class="col-3">
+      <label>Jam</label>
+      <input type="time" name="time" class="form-control" value="{{ task.time }}">
+    </div>
+    <div class="col-3">
+      <label>Prioritas</label>
+      <select name="priority" class="form-select">
+        <option value="tinggi" {% if task.priority=='tinggi' %}selected{% endif %}>Tinggi</option>
+        <option value="sedang" {% if task.priority=='sedang' %}selected{% endif %}>Sedang</option>
+        <option value="rendah" {% if task.priority=='rendah' %}selected{% endif %}>Rendah</option>
+      </select>
+    </div>
+    <div class="col-2">
+      <label>Recurring</label>
+      <select name="recurring" class="form-select">
+        <option value="none" {% if not task.recurring %}selected{% endif %}>Sekali</option>
+        <option value="daily" {% if task.recurring=='daily' %}selected{% endif %}>Harian</option>
+        <option value="weekly" {% if task.recurring=='weekly' %}selected{% endif %}>Mingguan</option>
+        <option value="monthly" {% if task.recurring=='monthly' %}selected{% endif %}>Bulanan</option>
+      </select>
+    </div>
+  </div>
+  <button class="btn btn-primary mt-3" type="submit">Simpan</button>
+  <a href="{{ url_for('routes.todo_tasks') }}" class="btn btn-secondary mt-3">Batal</a>
+</form>
+{% endblock %}

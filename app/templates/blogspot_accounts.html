@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Blogspot Accounts{% endblock %}
+{% block content %}
+<h2>Blogspot Accounts</h2>
+<a href="{{ url_for('routes.add_blogspot') }}" class="btn btn-primary mb-3">Add Blogspot Account</a>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Blog ID</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for acc in accounts %}
+        <tr>
+            <td>{{ acc.name }}</td>
+            <td>{{ acc.blog_id }}</td>
+            <td>
+                <a href="{{ url_for('routes.edit_blogspot', acc_id=acc.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                <form action="{{ url_for('routes.delete_blogspot', acc_id=acc.id) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete?')">Delete</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

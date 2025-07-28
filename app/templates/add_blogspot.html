@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Add Blogspot Account{% endblock %}
+{% block content %}
+<h2>Add Blogspot Account</h2>
+<form method="POST" class="mt-4" style="max-width:500px;">
+    <div class="mb-3">
+        <label>Name</label>
+        <input type="text" name="name" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Blog ID</label>
+        <input type="text" name="blog_id" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Access Token</label>
+        <input type="text" name="access_token" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Refresh Token</label>
+        <input type="text" name="refresh_token" class="form-control">
+    </div>
+    <a href="{{ url_for('routes.blogspot_oauth_start') }}" class="btn btn-danger mb-3">Connect Blogspot via Google</a>
+
+    <button class="btn btn-success" type="submit">Add</button>
+</form>
+{% endblock %}

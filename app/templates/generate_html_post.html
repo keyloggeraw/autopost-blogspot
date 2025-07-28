@@ -1,0 +1,343 @@
+{% extends "base.html" %}
+{% block title %}Generate HTML Produk - Kutoko{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-filetype-html me-2"></i>Generate HTML Produk</h2>
+<div class="row">
+  <div class="col-lg-7">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <form id="htmlForm" autocomplete="off">
+          <!-- Judul -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="judul"><i class="bi bi-tag me-1"></i>Judul Produk</label>
+            <input type="text" class="form-control" id="judul" placeholder="Hanya untuk judul posting/preview">
+          </div>
+          <!-- Judul -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="generate"><i class="bi bi-tag me-1"></i>generate judul</label>
+            <input type="text" class="form-control" id="generate" placeholder="Hanya untuk generate posting/preview">
+          </div>
+          <!-- Deskripsi Singkat -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="deskripsi_singkat"><i class="bi bi-info-square me-1"></i>Deskripsi Singkat</label>
+            <div class="input-group">
+              <textarea class="form-control" id="deskripsi_singkat" rows="2" placeholder="Deskripsi singkat, baris baru = &lt;br/&gt;"></textarea>
+              <button type="button" class="btn btn-outline-primary" id="generateDeskripsiBtn">Generate</button>
+            </div>
+          </div>
+          <!-- Gambar Produk -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="gambar">
+              <i class="bi bi-images me-1"></i>URL Gambar Produk
+              <span class="text-muted small">(1 URL per baris)</span>
+            </label>
+            <textarea class="form-control" id="gambar" rows="3" placeholder="https://...jpg&#10;https://...png"></textarea>
+          </div>
+          <!-- Status -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="status_produk"><i class="bi bi-star me-1"></i>Status Produk</label>
+            <input type="text" class="form-control" id="status_produk" placeholder="misal: terlaris, stok terbatas">
+          </div>
+          <!-- Harga -->
+          <div class="mb-3">
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label fw-semibold" for="harga_normal"><i class="bi bi-cash-stack me-1"></i>Harga Normal</label>
+                <input type="text" class="form-control" id="harga_normal" placeholder="Contoh: 65000">
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold" for="harga_promo"><i class="bi bi-currency-dollar me-1"></i>Harga Promo</label>
+                <input type="text" class="form-control" id="harga_promo" placeholder="Contoh: 60000">
+              </div>
+            </div>
+          </div>
+
+          <!-- Deskripsi Panjang -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold" for="deskripsi_panjang"><i class="bi bi-card-text me-1"></i>Deskripsi Lengkap</label>
+            <textarea class="form-control" id="deskripsi_panjang" rows="3" placeholder="Deskripsi lengkap, baris baru = &lt;br/&gt;"></textarea>
+          </div>
+          <!-- Marketplace -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold"><i class="bi bi-shop me-1"></i>Marketplace Produk Ada di:</label><br>
+            <div class="row g-2 align-items-center">
+              <div class="col-auto">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input marketplace-check" type="checkbox" id="mp_shopee" value="shopee">
+                  <label class="form-check-label" for="mp_shopee"><i class="bi bi-bag me-1"></i>Shopee</label>
+                </div>
+                <input type="text" class="form-control form-control-sm mt-1 mp-url" id="url_shopee" placeholder="URL Shopee" style="display:none;">
+              </div>
+              <div class="col-auto">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input marketplace-check" type="checkbox" id="mp_tokopedia" value="tokopedia">
+                  <label class="form-check-label" for="mp_tokopedia"><i class="bi bi-bag-check me-1"></i>Tiktok</label>
+                </div>
+                <input type="text" class="form-control form-control-sm mt-1 mp-url" id="url_tokopedia" placeholder="URL Tokopedia" style="display:none;">
+              </div>
+              <div class="col-auto">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input marketplace-check" type="checkbox" id="mp_bukalapak" value="bukalapak">
+                  <label class="form-check-label" for="mp_bukalapak"><i class="bi bi-cart me-1"></i>Toco</label>
+                </div>
+                <input type="text" class="form-control form-control-sm mt-1 mp-url" id="url_bukalapak" placeholder="URL Bukalapak" style="display:none;">
+              </div>
+              <div class="col-auto">
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input marketplace-check" type="checkbox" id="mp_lazada" value="lazada">
+                  <label class="form-check-label" for="mp_lazada"><i class="bi bi-bag-heart me-1"></i>Lazada</label>
+                </div>
+                <input type="text" class="form-control form-control-sm mt-1 mp-url" id="url_lazada" placeholder="URL Lazada" style="display:none;">
+              </div>
+            </div>
+            <div id="custom-container" class="mt-2 mb-2"></div>
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="add-mp-lain-btn"><i class="bi bi-plus-lg me-1"></i>Tambah Marketplace Lain</button>
+          </div>
+          <!-- Tombol Action -->
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <button type="button" class="btn btn-primary" id="copyBtn"><i class="bi bi-clipboard me-1"></i>Copy HTML</button>
+            <button type="button" class="btn btn-success" id="addToNewPostBtn"><i class="bi bi-file-earmark-plus me-1"></i>Add to New Post</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!-- PREVIEW & HASIL -->
+  <div class="col-lg-5">
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <label class="form-label fw-semibold"><i class="bi bi-eye me-1"></i>Preview Block Produk</label>
+        <div class="border rounded p-2 mb-2 bg-light" style="min-height:80px;">
+          <b id="preview_judul"></b>
+          <div id="preview_block"></div>
+        </div>
+        <label class="form-label fw-semibold"><i class="bi bi-code-slash me-1"></i>Hasil HTML</label>
+        <textarea id="hasilHtml" class="form-control" style="height:200px; font-family:monospace"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('generateDeskripsiBtn').addEventListener('click', function() {
+  const generate = document.getElementById('generate').value.trim();
+  if (!generate) {
+    alert('Isi generate produk dulu!');
+    return;
+  }
+
+  this.disabled = true;
+  this.innerHTML = 'Generating...';
+
+  fetch('/generate-description', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({generate: generate})
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.deskripsi) {
+      document.getElementById('deskripsi_singkat').value = data.deskripsi;
+      // Trigger update preview/html otomatis jika perlu
+      generateHTML();
+    } else {
+      alert('Gagal generate: ' + (data.error || 'Unknown error'));
+    }
+  })
+  .catch(err => {
+    alert('Terjadi error: ' + err.message);
+  })
+  .finally(() => {
+    this.disabled = false;
+    this.innerHTML = 'Generate';
+  });
+});
+// ... (script tetap persis dari kode asli kamu)
+function numberWithDots(x) {
+  return x.replace(/\D/g,'').replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function getMarketplaceLinks() {
+  let arr = [];
+  [
+    {id:'shopee',name:'Shopee'},
+    {id:'tokopedia',name:'tiktok'},
+    {id:'bukalapak',name:'toco'},
+    {id:'lazada',name:'Lazada'}
+  ].forEach(function(mp){
+    if(document.getElementById('mp_'+mp.id).checked) {
+      let url = document.getElementById('url_'+mp.id).value.trim();
+      if(url) arr.push({cls:'link-'+mp.id, name:mp.name, url:url});
+    }
+  });
+  let lain = document.querySelectorAll('.custom-row');
+  lain.forEach(function(row){
+    let nama = row.querySelector('.mp-lain-nama').value.trim();
+    let url = row.querySelector('.mp-lain-url').value.trim();
+    if(nama && url){
+      arr.push({cls:'link-custom', name:nama, url:url});
+    }
+  });
+  return arr;
+}
+
+function generateHTML() {
+  var judul = document.getElementById('judul').value.trim();
+  var gambarText = document.getElementById('gambar').value.trim();
+  var urls = gambarText.split('\n').map(u => u.trim()).filter(u => u);
+  var statusProduk = document.getElementById('status_produk').value.trim();
+  var hargaNormal = document.getElementById('harga_normal').value.trim();
+  var hargaPromo = document.getElementById('harga_promo').value.trim();
+  var deskripsiSingkat = document.getElementById('deskripsi_singkat').value.trim();
+  var deskripsiPanjang = document.getElementById('deskripsi_panjang').value.trim();
+
+  var hargaNormalFmt = hargaNormal ? 'Rp&nbsp;' + numberWithDots(hargaNormal) : '';
+  var hargaPromoFmt = hargaPromo ? 'Rp&nbsp;' + numberWithDots(hargaPromo) : '';
+
+  let gambarBlock = `<div class="gambar-produk">\n\t<div class="gambar-slide">\n`;
+  urls.forEach(function(url, idx){
+    gambarBlock += `\t\t<img alt="Gambar Produk ${idx+1}" src="${url}"/>\n`;
+  });
+  gambarBlock += `\t</div>\n`;
+
+  if(statusProduk){
+    gambarBlock += `\t<div class="status-produk">\n\t\t<div class="info-produk">${statusProduk}</div>\n\t</div>\n`;
+  } else {
+    gambarBlock += `\t<div class="status-produk">\n\t</div>\n`;
+  }
+  gambarBlock += `</div>`;
+
+  let hargaBlock = '';
+  if(hargaNormalFmt && hargaPromoFmt){
+    hargaBlock = `<div class="detail-produk">\n<div class="harga-produk"><s>${hargaNormalFmt}</s> ${hargaPromoFmt}</div>\n</div>`;
+  } else if (hargaNormalFmt){
+    hargaBlock = `<div class="detail-produk">\n<div class="harga-produk">${hargaNormalFmt}</div>\n</div>`;
+  }
+
+  let descSingkatBlock = deskripsiSingkat ? `<div class="deskripsi-produk">${deskripsiSingkat.replace(/\n/g,"<br/>")}</div>` : '';
+  let descPanjangBlock = deskripsiPanjang ? `<div class="deskripsi-produk-panjang">${deskripsiPanjang.replace(/\n/g,"<br/>")}</div>` : '';
+  let metaBlock = hargaNormal ? `<meta content="${hargaNormalFmt.replace(/&nbsp;/g," ")}" itemprop="price"/>` : '';
+
+  let links = getMarketplaceLinks();
+  let mpHtml = '';
+  if(links.length > 0){
+    mpHtml += `<div class="link-marketplace">\n`;
+    links.forEach(function(mp){
+      mpHtml += `<a rel="nofollow" target="_blank" class="${mp.cls}" href="${mp.url}">${mp.name}</a>\n`;
+    });
+    mpHtml += `</div>`;
+  }
+
+  let html = `${gambarBlock}\n${hargaBlock}\n${descSingkatBlock}\n${descPanjangBlock}\n${metaBlock}\n${mpHtml}`;
+  document.getElementById('hasilHtml').value = html;
+
+  document.getElementById('preview_judul').textContent = judul;
+  var preview = '';
+  if(urls.length > 0) {
+    preview += `<div class="gambar-produk"><div class="gambar-slide">`;
+    urls.forEach(function(url, idx){
+      preview += `<img alt="Gambar Produk ${idx+1}" src="${url}" style="max-width:90px; margin:4px; border-radius:5px; position:relative;">
+<span class="remove-image-btn" data-url="${url}" style="position:absolute; margin-left:-20px; margin-top:-5px; color:red; cursor:pointer;">&times;</span>`;
+
+    });
+    preview += `</div>`;
+    if(statusProduk){
+      preview += `<div class="status-produk"><div class="info-produk">${statusProduk}</div></div>`;
+    } else {
+      preview += `<div class="status-produk"></div>`;
+    }
+    preview += `</div>`;
+  }
+  if(hargaNormalFmt && hargaPromoFmt){
+    preview += `<div class="detail-produk"><div class="harga-produk"><s>${hargaNormalFmt}</s> ${hargaPromoFmt}</div></div>`;
+  } else if(hargaNormalFmt){
+    preview += `<div class="detail-produk"><div class="harga-produk">${hargaNormalFmt}</div></div>`;
+  }
+  if(deskripsiSingkat){
+    preview += `<div class="deskripsi-produk" style="font-size:14px; color:#666;">${deskripsiSingkat.replace(/\n/g,"<br/>")}</div>`;
+  }
+  if(deskripsiPanjang){
+    preview += `<div class="deskripsi-produk-panjang" style="font-size:13px; color:#888;">${deskripsiPanjang.replace(/\n/g,"<br/>")}</div>`;
+  }
+  if(links.length > 0){
+    preview += `<div class="link-marketplace" style="margin:4px 0;">`;
+    links.forEach(function(mp){
+      preview += `<a rel="nofollow" target="_blank" class="${mp.cls}" href="${mp.url}" style="margin-right:8px;">${mp.name}</a>`;
+    });
+    preview += `</div>`;
+  }
+  document.getElementById('preview_block').innerHTML = preview;
+}
+
+['judul','gambar','status_produk','harga_normal','harga_promo','deskripsi_singkat','deskripsi_panjang']
+  .forEach(id => {
+    document.getElementById(id).addEventListener('input', generateHTML);
+  });
+
+document.getElementById('copyBtn').addEventListener('click', function() {
+  var hasil = document.getElementById('hasilHtml');
+  hasil.select();
+  document.execCommand('copy');
+  this.innerHTML = "<i class='bi bi-check-lg me-1'></i>Copied!";
+  setTimeout(() => { this.innerHTML = "<i class='bi bi-clipboard me-1'></i>Copy HTML"; }, 1500);
+});
+
+document.querySelectorAll('.marketplace-check').forEach(function(ck){
+  ck.addEventListener('change', function(){
+    var input = document.getElementById('url_' + ck.value);
+    if(input) input.style.display = ck.checked ? 'block' : 'none';
+    generateHTML();
+  });
+});
+document.querySelectorAll('.mp-url').forEach(function(input){
+  input.addEventListener('input', generateHTML);
+});
+
+let mpLainCount = 0;
+document.getElementById('add-mp-lain-btn').addEventListener('click', function(){
+  mpLainCount++;
+  let div = document.createElement('div');
+  div.className = 'custom-row mb-1';
+  div.innerHTML = `
+    <div class="input-group input-group-sm mb-1">
+      <input type="text" class="form-control mp-lain-nama" placeholder="Nama Marketplace">
+      <input type="text" class="form-control mp-lain-url" placeholder="URL Marketplace">
+      <button type="button" class="btn btn-outline-danger btn-sm remove-mp-lain">&times;</button>
+    </div>
+  `;
+  document.getElementById('custom-container').appendChild(div);
+
+  div.querySelector('.mp-lain-nama').addEventListener('input', generateHTML);
+  div.querySelector('.mp-lain-url').addEventListener('input', generateHTML);
+  div.querySelector('.remove-mp-lain').addEventListener('click', function(){
+    div.remove();
+    generateHTML();
+  });
+  generateHTML();
+});
+
+document.addEventListener('click', function(e) {
+  if(e.target.classList.contains('remove-image-btn')) {
+    const urlToRemove = e.target.getAttribute('data-url');
+    const textarea = document.getElementById('gambar');
+    const lines = textarea.value.split('\n').map(u => u.trim());
+    const filtered = lines.filter(u => u !== urlToRemove);
+    textarea.value = filtered.join('\n');
+    generateHTML();
+  }
+});
+
+generateHTML();
+document.getElementById('addToNewPostBtn').addEventListener('click', function() {
+  const judul = document.getElementById('judul').value.trim();
+  const html = document.getElementById('hasilHtml').value.trim();
+  if(!judul && !html) {
+    alert("Lengkapi judul dan HTML!");
+    return;
+  }
+  localStorage.setItem('draft_newpost', JSON.stringify({judul: judul, html: html}));
+  window.open("/blogspot_post/new", "_blank");
+});
+</script>
+{% endblock %}
